@@ -12,7 +12,7 @@ import pl.mat.filter.TweetFilter;
 import pl.mat.model.db.Tweet;
 import pl.mat.model.twitter.Message;
 import pl.mat.repository.TweetRepository;
-import pl.mat.service.KafkaProducer;
+import pl.mat.service.KafkaTweetProducer;
 
 @Slf4j
 @Component
@@ -25,15 +25,15 @@ public class TwitterTweetProcessorImpl implements TwitterTweetProcessor {
             .create();
 
     private final TweetRepository tweetRepository;
-    private final KafkaProducer kafkaProducer;
+    private final KafkaTweetProducer kafkaTweetProducer;
     private final String kafkaTopic;
 
     public TwitterTweetProcessorImpl(
             TweetRepository tweetRepository,
-            KafkaProducer kafkaProducer,
+            KafkaTweetProducer kafkaTweetProducer,
             @Value(value = "${spring.kafka.template.default-topic}") String kafkaTopic) {
         this.tweetRepository = tweetRepository;
-        this.kafkaProducer = kafkaProducer;
+        this.kafkaTweetProducer = kafkaTweetProducer;
         this.kafkaTopic = kafkaTopic;
     }
 
@@ -45,7 +45,8 @@ public class TwitterTweetProcessorImpl implements TwitterTweetProcessor {
         if (message.getRetweetedStatus() != null && TweetFilter.isValid(message.getRetweetedStatus())) {
             Tweet tweet = TweetConverter.fromMessage(message.getRetweetedStatus());
             tweetRepository.save(tweet);
-            kafkaProducer.send(kafkaTopic, tweet.getMessageId());
+            System.out.println("XXXXXXXXXD =======> " + tweet.toString());
+            kafkaTweetProducer.send(kafkaTopic, tweet.getAuthorScreenName());
         }
     }
 

@@ -18,6 +18,7 @@ repositories {
 
 dependencies {
 	implementation project(':twiffer-producer')
+	implementation project(':twiffer-analysis')
 }
 
 test {

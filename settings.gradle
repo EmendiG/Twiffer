@@ -1,2 +1,2 @@
 rootProject.name = 'twiffer'
-include 'twiffer-producer'
+include 'twiffer-producer', 'twiffer-analysis'

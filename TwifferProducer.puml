@@ -1,0 +1,156 @@
+@startuml
+class pl.mat.client.TwitterFetchThread {
+- String invalidMessageStart
+- TwitterTweetProcessor twitterMessageProcessor
+- ExecutorService executorService
+- BasicClient client
+- BlockingQueue<String> stringLinkedBlockingQueue
++ void run()
+- void processMessage(String)
+- void processIncomingTextMessage(String)
+}
+class pl.mat.service.RunningServiceImpl {
+- StockClient stockClient
+- TwitterClient twitterClient
++ void schedule()
++ void startProcess()
+}
+class pl.mat.client.StockClientImpl {
+- {static} String API_URL
+- StockPriceProcessor stockPriceProcessor
++ void startFetchProcess()
+}
+class pl.mat.parser.DateParser {
++ {static} Date parseFromString(String)
+}
+class pl.mat.model.db.Tweet {
+- String messageId
+- Date createdAt
+- String text
+- Long quoteCount
+- Long replyCount
+- Long retweetCount
+- Long favoriteCount
+- String authorId
+- Date authorCreatedAt
+- String authorScreenName
+- Long authorFollowersCount
+- Long authorStatusesCount
+}
+class pl.mat.model.twitter.Message {
+- String id
+- Message retweetedStatus
+- Date createdAt
+- String text
+- User user
+- String lang
+- Long quoteCount
+- Long replyCount
+- Long retweetCount
+- Long favoriteCount
+}
+class pl.mat.converter.TweetConverter {
++ {static} Tweet fromMessage(Message)
+}
+interface pl.mat.service.RunningService {
+~ void startProcess()
+}
+interface pl.mat.processor.StockPriceProcessor {
+~ void processStockPrice(JSONObject)
+}
+class pl.mat.client.TwitterClientImpl {
+- TwitterTweetProcessor twitterMessageProcessor
+- Authentication authentication
+- BlockingQueue<String> stringLinkedBlockingQueue
+- List<String> searchTerms
++ void startFetchProcess()
+- TwitterFetchThread createFetchThread(ExecutorService)
+}
+class pl.mat.service.KafkaProducer {
+- KafkaTemplate<String,String> kafkaTemplate
++ void send(String,String)
+}
+interface pl.mat.repository.StockRepository {
+}
+interface pl.mat.processor.TwitterTweetProcessor {
+~ void processStringMessage(String)
+}
+class pl.mat.config.TwitterConfig {
+- String apiKey
+- String apiSecret
+- String token
+- String tokenSecret
+- String searchTerm
++ OAuth1 authentication()
++ BlockingQueue<String> blockingQueue()
++ List<String> searchTerms()
+}
+class pl.mat.filter.TweetFilter {
+- {static} long EIGHT_DAYS_MILLIS
++ {static} boolean isValid(Message)
+- {static} boolean isSignificantTweet(Message)
+- {static} boolean isPostedRecently(Message)
+}
+class pl.mat.config.KafkaConfig {
+- String bootstrapServers
++ Map<String,Object> producerConfigs()
++ ProducerFactory<String,String> producerFactory()
++ KafkaTemplate<String,String> kafkaTemplate()
++ KafkaProducer kafkaProducer()
+}
+interface pl.mat.client.TwitterClient {
+~ void startFetchProcess()
+}
+class pl.mat.TwifferApplication {
+- RunningService runningService
++ {static} void main(String[])
++ void run(String)
+}
+class pl.mat.model.db.Bitcoin {
+- Date timeUpdated
+- String stockName
+- Double price
+}
+class pl.mat.processor.CoindeskPriceProcessor {
+- StockRepository stockRepository
++ void processStockPrice(JSONObject)
+- Bitcoin getBitcoin(JSONObject)
+}
+interface pl.mat.client.StockClient {
+~ void startFetchProcess()
+}
+class pl.mat.config.MongoConfig {
++ MongoClient mongoClient(String)
+}
+class pl.mat.processor.TwitterTweetProcessorImpl {
+- {static} Gson gson
+- TweetRepository tweetRepository
+- KafkaProducer kafkaProducer
+- String kafkaTopic
++ void processStringMessage(String)
+}
+interface pl.mat.repository.TweetRepository {
+}
+class pl.mat.model.twitter.User {
+- String id
+- Date createdAt
+- String screenName
+- Long followersCount
+- Long statusesCount
+}
+class pl.mat.controller.TestController {
+- TweetRepository tweetRepository
++ List<Tweet> listTweets()
+}
+
+
+pl.mat.client.Thread <|-- pl.mat.client.TwitterFetchThread
+pl.mat.service.RunningService <|.. pl.mat.service.RunningServiceImpl
+pl.mat.client.StockClient <|.. pl.mat.client.StockClientImpl
+pl.mat.client.TwitterClient <|.. pl.mat.client.TwitterClientImpl
+org.springframework.data.mongodb.repository.MongoRepository <|-- pl.mat.repository.StockRepository
+org.springframework.boot.CommandLineRunner <|.. pl.mat.TwifferApplication
+pl.mat.processor.StockPriceProcessor <|.. pl.mat.processor.CoindeskPriceProcessor
+pl.mat.processor.TwitterTweetProcessor <|.. pl.mat.processor.TwitterTweetProcessorImpl
+org.springframework.data.mongodb.repository.MongoRepository <|-- pl.mat.repository.TweetRepository
+@enduml
