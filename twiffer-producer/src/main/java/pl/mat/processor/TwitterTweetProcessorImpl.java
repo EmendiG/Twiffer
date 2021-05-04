@@ -19,7 +19,7 @@ import pl.mat.service.KafkaTweetProducer;
 @Builder
 public class TwitterTweetProcessorImpl implements TwitterTweetProcessor {
 
-    private final static Gson gson = new GsonBuilder()
+    private static final Gson gson = new GsonBuilder()
             .setDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy")
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
@@ -45,8 +45,7 @@ public class TwitterTweetProcessorImpl implements TwitterTweetProcessor {
         if (message.getRetweetedStatus() != null && TweetFilter.isValid(message.getRetweetedStatus())) {
             Tweet tweet = TweetConverter.fromMessage(message.getRetweetedStatus());
             tweetRepository.save(tweet);
-            System.out.println("XXXXXXXXXD =======> " + tweet.toString());
-            kafkaTweetProducer.send(kafkaTopic, tweet.getAuthorScreenName());
+            kafkaTweetProducer.send(kafkaTopic, tweet.getCreatedAt().toString());
         }
     }
 

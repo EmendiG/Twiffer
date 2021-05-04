@@ -5,7 +5,7 @@ import pl.mat.model.twitter.Message;
 
 public class TweetFilter {
 
-    private final static long EIGHT_DAYS_MILLIS = 8 * 86_400 * 1_000;
+    private final static long EIGHT_DAYS_IN_MILLIS = 8 * 86_400 * 1_000;
 
     public static boolean isValid(Message message) {
         return isSignificantTweet(message) && isPostedRecently(message);
@@ -16,7 +16,7 @@ public class TweetFilter {
     }
 
     private static boolean isPostedRecently(Message message) {
-        return message.getCreatedAt().getTime() > System.currentTimeMillis() - EIGHT_DAYS_MILLIS;
+        return message.getCreatedAt().getTime() > System.currentTimeMillis() - EIGHT_DAYS_IN_MILLIS;
     }
 
 }

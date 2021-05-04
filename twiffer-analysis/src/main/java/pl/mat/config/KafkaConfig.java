@@ -13,20 +13,19 @@ import java.util.Properties;
 public class KafkaConfig {
 
     @Value(value = "${spring.kafka.bootstrap-servers}")
-    private static String BOOTSTRAP_SERVERS;
+    private String BOOTSTRAP_SERVERS;
 
     @Value(value = "${spring.kafka.template.groupId}")
-    private static String GROUP_ID;
+    private String GROUP_ID;
 
-    @Bean
-    public Properties consumerConfigs() {
+    private Properties consumerConfigs() {
         Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        props.put(ConsumerConfig.CLIENT_ID_CONFIG, "earliest");
+        props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, "earliest");
         return props;
     }
 
